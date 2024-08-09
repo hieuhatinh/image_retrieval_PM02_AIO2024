@@ -60,3 +60,31 @@
         embedding = embedding_function._encode_image(image=image)
         return np.array(embedding)
 ```
+
+#### 3.2.2. Tối ưu hoá quá trình truy vấn hình ảnh sử dụng mô hình CLIP và cơ sở dữ liệu vector
+- Vì mỗi lần truy vấn đều cần phải sử dụng lại mô
+hình CLIP, phương pháp này sẽ sử dụng một cơ sở dữ liệu vector (vector database) để quản lý các
+embedding vector, giúp quá trình truy vấn được tối ưu hơn
+- Đầu tiên, ta cần lấy danh sách đường dẫn của các ảnh mà ta muốn trích xuất vector.
+
+**a) Truy vấn ảnh với L2 Collection**
+-  Một collection trong ChromaDB có thể được hiểu như là một tập hợp các vector hoặc tài liệu được chỉ mục và lưu trữ cùng nhau dựa trên một số tiêu chí hoặc đặc điểm chung.
+- Đoạn code sau khởi tạo 1 client cho cơ sở dữ liệu cho Chroma và tạo collection mới với cấu hình sử dụng L2 để so sánh các embedding vector. Hàm add_embedding để thêm các vector đặc
+trưng của ảnh vào collection
+```
+    # Create a Chroma Client
+    chroma_client = chromadb.Client()
+    # Create a collection
+    l2_collection = chroma_client.get_or_create_collection (name='l2_collection',
+                                                            metadata={HNSW_SPACE: "l2"})
+    add_embedding(collection=l2_collection, files_path=files_path)
+```
+
+**b) Truy vấn ảnh với Cosine Similarity Collection**
+- Tạo collection dựa trên khoảng cách cosine
+```
+    # Create a collection
+    cosine_collection = chroma_client.get_or_create_collection(name='Cosine_collection',
+                                                       metadata={HNSW_SPACE: "cosine"})
+    add_embedding(collection=cosine_collection, files_path=files_path)
+```
