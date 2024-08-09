@@ -43,3 +43,20 @@
     $r = \frac{E[(X - \mu_X)(Y - \mu_Y)]}{\sigma_X \sigma_Y} = \frac{\sum (x_i - \mu_X)(y_i - \mu_Y)}{\sqrt{\sum(x_i - \mu_X)^2 \sum(y_i - \mu_Y)^2}}$
 
 - Tạo hàm get_correlation_coefficient_score(), tương tự với get_l1_score()
+
+### 3.2. Chương trình truy vấn ảnh nâng cao:
+#### 3.2.1 Truy vấn ảnh với pretrained deep learning model
+- Thư viện chromadb hỗ trợ việc quản lý và truy xuất dữ liệu hình ảnh hiệu quả (chúng ta cũng sử dụng thêm với mục đích tạo vector database), và chromadb có thể dùng open-clip-torch để cung cấp khả năng sử dụng mô hình CLIP đã được đào tạo sẵn, đây là một công cụ mạnh mẽ để phân tích nội dung hình ảnh thông qua học sâu
+```
+    !pip install chromadb
+    !pip install open-clip-torch
+```
+
+- Thêm 1 hàm trích xuất vector đặc trưng cho mỗi hình ảnh. Mô hình CLIP sẽ được sử dụng để biến đổi hình ảnh thành các vector đặc trưng đại diện cho nội dung và ngữ cảnh của hình ảnh đó. Việc so sánh các hình ảnh sẽ thông qua so sánh độ tương đồng giữa các vector mà không sử dụng trực tiếp ảnh gốc
+```
+    embedding_function = OpenCLIPEmbeddingFunction()
+        
+    def get_single_image_embedding(image):
+        embedding = embedding_function._encode_image(image=image)
+        return np.array(embedding)
+```
